@@ -109,10 +109,14 @@
     <Compile Include="Control\RegistrationDialog.xaml.cs">
       <DependentUpon>RegistrationDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Data\Contracts\IData.cs" />
+    <Compile Include="Data\Contracts\IDataAuth.cs" />
     <Compile Include="Data\Exceptions\ApplicationException.cs" />
-    <Compile Include="Data\IDataAuth.cs" />
-    <Compile Include="Data\Models\TransactionModel.cs" />
-    <Compile Include="Data\Models\TransactionsCollection.cs" />
+    <Compile Include="Data\Models\BalanceResponseModel.cs" />
+    <Compile Include="Data\Models\Categories\CategoriesCollection.cs" />
+    <Compile Include="Data\Models\Categories\CategoriesResponseModel.cs" />
+    <Compile Include="Data\Models\Transactions\TransactionModel.cs" />
+    <Compile Include="Data\Models\Transactions\TransactionsCollection.cs" />
     <Compile Include="Data\Models\User\UserLoginModel.cs" />
     <Compile Include="Data\Models\User\UserRegisterModel.cs" />
     <Compile Include="Data\RestApiData.cs" />

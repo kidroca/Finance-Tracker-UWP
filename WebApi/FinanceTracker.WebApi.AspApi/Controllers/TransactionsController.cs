@@ -59,7 +59,7 @@
                 Amount = transaction.Amount,
                 Balance = this.balancesRepo.GetById(this.UserId),
                 DateTime = transaction.DateTime,
-                Type = transaction.Type,
+                Type = transaction.Type
             };
 
             var dbCategory = this.categoriesRepo.All()

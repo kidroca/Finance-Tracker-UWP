@@ -2,9 +2,13 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
+    using Contracts;
     using Exceptions;
     using Models;
+    using Models.Categories;
+    using Models.Transactions;
     using Models.User;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
@@ -12,15 +16,19 @@
     using Windows.Web.Http;
 
     /// <summary>
-    /// Todo Implement with Singelton with double null check lock
+    /// Singleton Implementation, use GetInstance to obtain the instance of this class
+    /// Implemented a synchronization lock for the GetInstance method
     /// </summary>
-    public class RestApiData : IDataAuth
+    public class RestApiData : IDataAuth, IData
     {
+        private static RestApiData instance;
+
+        private static readonly object syncLock = new object();
+
         private string authnenticationToken;
 
-        public RestApiData(string baseUrl)
+        private RestApiData()
         {
-            this.BaseUri = new Uri(baseUrl);
         }
 
         public Uri BaseUri { get; private set; }
@@ -33,8 +41,29 @@
                 {
                     throw new ArgumentException("Invalid Token: Null or Empty");
                 }
+
                 this.authnenticationToken = value;
+                this.IsAuthenticated = true;
             }
+        }
+
+        public bool IsAuthenticated { get; private set; }
+
+        public static RestApiData GetInstance(string baseUrl)
+        {
+            if (instance == null)
+            {
+                lock (syncLock)
+                {
+                    if (instance == null)
+                    {
+                        instance = new RestApiData();
+                    }
+                }
+            }
+
+            instance.BaseUri = new Uri(baseUrl);
+            return instance;
         }
 
         public async Task RegisterAsync(UserRegisterModel user)
@@ -77,9 +106,12 @@
             }
         }
 
-        public async Task<IEnumerable<TransactionModel>> GetTransactions(
+        // Todo: Authentication
+        public async Task<IEnumerable<TransactionModel>> GetTransactionsAsync(
             string category = null, int page = 1, int size = 10)
         {
+            this.ConfirmAuthentication();
+
             var queryParameters = new[]
             {
                 new KeyValuePair<string, string>(nameof(category), category),
@@ -99,6 +131,72 @@
             return collection.Result;
         }
 
+        public async Task<IEnumerable<string>> GetCategoriesAsync()
+        {
+            this.ConfirmAuthentication();
+
+            var uri = new Uri(this.BaseUri, "api/categories");
+            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Headers.Accept.ParseAdd("application/json");
+            request.Headers.Add("Authorization", this.authnenticationToken);
+
+            var response = await this.GetResponse(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string content = await response.Content.ReadAsStringAsync();
+
+                IEnumerable<string> categoryNames = await Task.Run(() =>
+                {
+                    var categories = JsonConvert.DeserializeObject<CategoriesCollection>(content)
+                        .Result
+                        .Select(c => c.Name);
+
+                    return categories;
+                });
+
+                return categoryNames;
+            }
+            else
+            {
+                throw new ApplicationException(response.ReasonPhrase);
+            }
+        }
+
+        public async Task<BalanceResponseModel> GetBalanceInformationAsync()
+        {
+            this.ConfirmAuthentication();
+
+            var uri = new Uri(this.BaseUri, "api/Account/Balance");
+            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Headers.Add("Authorization", this.authnenticationToken);
+            request.Headers.Accept.ParseAdd("application/json");
+
+            var response = await this.GetResponse(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string content = await response.Content.ReadAsStringAsync();
+                var balanceInfo = JsonConvert.DeserializeObject<BalanceResponseModel>(content);
+
+                return balanceInfo;
+            }
+            else
+            {
+                throw new ApplicationException(response.ReasonPhrase);
+            }
+        }
+
+        public Task<TransactionModel> AddTransactionAsync(TransactionModel transaction)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddCategoryAsync(string category)
+        {
+            throw new NotImplementedException();
+        }
+
         public TransactionModel AddTransaction(TransactionModel transaction)
         {
             throw new NotImplementedException();
@@ -115,7 +213,7 @@
 
         private Uri CreateUriWithQueryString(string endpoint, params KeyValuePair<string, string>[] parameters)
         {
-            string query = null;
+            string query;
             using (var content = new HttpFormUrlEncodedContent(parameters))
             {
                 query = content.ReadAsStringAsync().GetResults();
@@ -124,6 +222,14 @@
             var uri = new Uri(this.BaseUri, endpoint + query);
 
             return uri;
+        }
+
+        private void ConfirmAuthentication()
+        {
+            if (!this.IsAuthenticated)
+            {
+                throw new ApplicationException("You don't have the rights to access this page.");
+            }
         }
     }
 }

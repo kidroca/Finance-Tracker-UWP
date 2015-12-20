@@ -1,4 +1,4 @@
-namespace FinanceTracker.UniversalApp.UI.Data.Models
+namespace FinanceTracker.UniversalApp.UI.Data.Models.Transactions
 {
     using System;
     using System.ComponentModel.DataAnnotations;

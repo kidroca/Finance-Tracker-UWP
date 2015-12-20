@@ -16,9 +16,8 @@ namespace FinanceTracker.UniversalApp.UI.ViewModels
                 return this.currentAmount;
             }
 
-            private set
+            set
             {
-                // Todo: sync with server
                 this.currentAmount = value;
                 this.RaisePropertyChanged(nameof(this.CurrentAmount));
             }

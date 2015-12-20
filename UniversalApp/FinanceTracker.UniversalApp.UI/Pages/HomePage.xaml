@@ -8,18 +8,62 @@
     mc:Ignorable="d">
     <Grid Style="{StaticResource MainWrapperStyle}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="48" />
-            <RowDefinition Height="96" />
+            <RowDefinition Height="36" />
+            <RowDefinition Height="36" />
+            <RowDefinition Height="36" />
+            <RowDefinition Height="2*" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0"
+        <TextBlock Grid.Row="1"
                    Text="{Binding Title}"
                    Style="{StaticResource TitleStyle}"/>
+        <TextBlock Grid.Row="2" Text="Last Transactions" Style="{StaticResource TitleStyle}"/>
+        <ListView BorderThickness="0, 0, 0, 1" ShowsScrollingPlaceholders="True" Grid.Row="3" Name="LastTransactions" ItemsSource="{Binding LastTransactions}" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+            <ListViewItem VerticalAlignment="Center">
+                <TextBlock Text="Sample 1" Style="{StaticResource TitleStyle}" />
+            </ListViewItem>
+            <ListViewItem VerticalAlignment="Center">
+                <TextBlock Text="Sample 1" Style="{StaticResource TitleStyle}" />
+            </ListViewItem>
+            <ListViewItem VerticalAlignment="Center">
+                <TextBlock Text="Sample 1" Style="{StaticResource TitleStyle}" />
+            </ListViewItem>
+            <ListViewItem VerticalAlignment="Center">
+                <TextBlock Text="Sample 1" Style="{StaticResource TitleStyle}" />
+            </ListViewItem>
+            <ListViewItem VerticalAlignment="Center">
+                <TextBlock Text="Sample 1" Style="{StaticResource TitleStyle}" />
+            </ListViewItem>
+            <ListViewItem VerticalAlignment="Center">
+                <TextBlock Text="Sample 1" Style="{StaticResource TitleStyle}" />
+            </ListViewItem>
+            <ListViewItem VerticalAlignment="Center">
+                <TextBlock Text="Sample 1" Style="{StaticResource TitleStyle}" />
+            </ListViewItem>
+            <ListViewItem VerticalAlignment="Center">
+                <TextBlock Text="Sample 1" Style="{StaticResource TitleStyle}" />
+            </ListViewItem>
+            <ListViewItem VerticalAlignment="Center">
+                <TextBlock Text="Sample 1" Style="{StaticResource TitleStyle}" />
+            </ListViewItem>
+        </ListView>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <TextBlock Text="Balance: " Style="{StaticResource TitleStyle}" VerticalAlignment="Center" />
             <TextBlock Text="{Binding Balance.CurrentAmount}" />
         </StackPanel>
-        <Button Click="OnAddTransactionClick"
-            Grid.Row="2" Content="Add New Transaction" Style="{StaticResource CenteredElement}" FontSize="20"></Button>
+        <Grid Grid.Row="4" BorderThickness="0, 1, 0, 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="24" />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Button Click="OnAddTransactionClick"
+            Grid.Row="1" Grid.Column="1" Content="Add New Transaction" Background="White" 
+              VerticalAlignment="Stretch" FontSize="20"></Button>
+        </Grid>
     </Grid>
 </Page>

@@ -51,6 +51,24 @@
 
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
+        // GET api/Account/Balance
+        [Route("Balance")]
+        public IHttpActionResult GetBalanceInformation()
+        {
+            var user = this.UserManager.FindById(this.User.Identity.GetUserId());
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            return this.Ok(new
+            {
+                BalanceAmount = user.Balance.CurrentAmount,
+                user.UserName
+            });
+        }
+
         // GET api/Account/UserInfo
         [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
         [Route("UserInfo")]

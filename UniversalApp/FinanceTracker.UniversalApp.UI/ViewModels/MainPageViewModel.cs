@@ -5,7 +5,7 @@
     using System.ComponentModel.DataAnnotations;
     using System.Windows.Input;
     using Control;
-    using Data;
+    using Data.Contracts;
     using Data.Exceptions;
     using Data.Models.User;
     using Helpers;
@@ -73,6 +73,7 @@
             {
                 // Waiting wheel animation for the login
                 string token = await this.dataProvider.AuthenticateAsync(userLoginModel);
+                this.dataProvider.AuthenticationToken = token;
 
                 var content = (Window.Current.Content as AppShell).AppFrame;
                 content.Navigate(typeof(HomePage));
