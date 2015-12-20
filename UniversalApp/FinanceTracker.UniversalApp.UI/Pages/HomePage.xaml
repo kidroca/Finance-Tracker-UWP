@@ -1,0 +1,25 @@
+﻿<Page
+    x:Class="FinanceTracker.UniversalApp.UI.Pages.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FinanceTracker.UniversalApp.UI.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Grid Style="{StaticResource MainWrapperStyle}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48" />
+            <RowDefinition Height="96" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0"
+                   Text="{Binding Title}"
+                   Style="{StaticResource TitleStyle}"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <TextBlock Text="Balance: " Style="{StaticResource TitleStyle}" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding Balance.CurrentAmount}" />
+        </StackPanel>
+        <Button Click="OnAddTransactionClick"
+            Grid.Row="2" Content="Add New Transaction" Style="{StaticResource CenteredElement}" FontSize="20"></Button>
+    </Grid>
+</Page>

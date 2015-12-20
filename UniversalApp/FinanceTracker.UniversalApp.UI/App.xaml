@@ -1,0 +1,109 @@
+﻿<Application
+    x:Class="FinanceTracker.UniversalApp.UI.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FinanceTracker.UniversalApp.UI"
+    xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
+    RequestedTheme="Light">
+    <Application.Resources>
+        <Style x:Key="MainWrapperStyle" TargetType="Grid">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <ImageBrush ImageSource="ms-appx:///Assets/pageBackground.jpg" Stretch="UniformToFill">
+                        <ImageBrush.RelativeTransform>
+                            <CompositeTransform CenterY="0.5" CenterX="0.5"/>
+                        </ImageBrush.RelativeTransform>
+                    </ImageBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="DefaultElementValues" TargetType="FrameworkElement">
+            <Setter Property="Margin" Value="4, 4" />
+        </Style>
+
+        <Style x:Key="PanelGradient" TargetType="Panel">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush EndPoint="1,0.75" StartPoint="0,0.1">
+                        <GradientStop Color="#FF1D1D1D" Offset="1"/>
+                        <GradientStop Color="#FF1D1D1D"/>
+                        <GradientStop Color="#FF8F8F8F" Offset="0.349"/>
+                        <GradientStop Color="#FF8F8F8F" Offset="0.699"/>
+                        <GradientStop Color="#FF464444" Offset="0.53"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="TextBlock"
+               x:Key="TitleStyle">
+            <Setter Property="FontSize" Value="28" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="Honeydew" />
+        </Style>
+        <Style TargetType="Control" x:Key="CenteredElement">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="CreationTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontStyle" Value="Oblique" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="InputBoxColors" TargetType="Control" BasedOn="{StaticResource DefaultElementValues}">
+            <Setter Property="Background" Value="#CCFFFFFF"></Setter>
+            <Setter Property="BorderBrush" Value="Black" />
+        </Style>
+        <Style x:Key="CreationTextBoxStyle" TargetType="Control" BasedOn="{StaticResource InputBoxColors}">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontStyle" Value="Oblique" />
+            <Setter Property="Margin" Value="10, 0, 0, 0" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Foreground" Value="Honeydew" />
+        </Style>
+        <Style x:Key="DatePickerStyle" TargetType="input:RadDatePicker" BasedOn="{StaticResource DefaultElementValues}">
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="Height" Value="48" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontStyle" Value="Oblique" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        </Style>
+        <Style x:Key="ComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource DefaultElementValues}">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Height" Value="48" />
+            <Setter Property="BorderThickness" Value="2 "/>
+            <Setter Property="BorderBrush" Value="Black" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontStyle" Value="Oblique" />
+            <Setter Property="Background" Value="#CCFFFFFF"></Setter>
+        </Style>
+        <Style x:Key="CustomContentDialogStyle" TargetType="ContentDialog">
+            <Setter Property="Transitions">
+                <Setter.Value>
+                    <TransitionCollection>
+                        <EntranceThemeTransition FromVerticalOffset="480" FromHorizontalOffset="0"/>
+                    </TransitionCollection>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,1">
+                        <GradientStop Color="#FF707070" Offset="0.04"/>
+                        <GradientStop Color="#FFB4B4B4" Offset="0.442"/>
+                        <GradientStop Color="#FF878787" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <DataTemplate x:Key="CustomContentDialogTitle">
+            <Border Width="280" BorderThickness="0, 0, 0, 1" BorderBrush="Black">
+                <TextBlock HorizontalAlignment="Center" 
+                   FontSize="18"
+                   FontStyle="Oblique"
+                   Text="Here is the deal:" 
+                   Foreground="Black" />
+            </Border>
+        </DataTemplate>
+
+    </Application.Resources>
+</Application>

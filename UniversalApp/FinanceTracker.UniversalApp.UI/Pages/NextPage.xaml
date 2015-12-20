@@ -1,0 +1,28 @@
+﻿<Page
+    x:Class="FinanceTracker.UniversalApp.UI.Pages.NextPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FinanceTracker.UniversalApp.UI.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:control="using:FinanceTracker.UniversalApp.UI.Control"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0"
+                   Text="Next Page" 
+                   Style="{StaticResource TitleStyle}"/>
+        <TextBlock Grid.Row="1"
+                   Name="tbDate"
+                   Style="{StaticResource TitleStyle}" />
+    </Grid>
+    <!--<Page.BottomAppBar>
+        <AppBar>
+            <control:NavigationControl x:Name="navBar"/>
+        </AppBar>
+    </Page.BottomAppBar>-->
+</Page>
