@@ -1,7 +1,9 @@
 ﻿namespace FinanceTracker.WebApi.AspApi.Controllers
 {
     using System;
+    using System.Data.Entity;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Web.Http;
     using AutoMapper.QueryableExtensions;
@@ -27,8 +29,6 @@
             this.categoriesRepo = categoriesRepository;
         }
 
-        // Todo: Transaction by date
-
         public IHttpActionResult Get(string category = null, int page = 1, int size = 10)
         {
             if (page <= 0 || size <= 0)
@@ -43,7 +43,7 @@
             if (!string.IsNullOrEmpty(category.Trim()))
             {
                 category = base.FormatCategoryName(category);
-                transactions.Where(t => t.Category.Name == category);
+                transactions = transactions.Where(t => t.Category.Name == category);
             }
 
             var filtered = transactions
@@ -51,6 +51,30 @@
                 .Take(size)
                 .ProjectTo<TransactionBindingModel>()
                 .ToList();
+
+            return this.Ok(filtered);
+        }
+
+        // Todo Check for api endpoint problems because method is overloaded
+        public async Task<IHttpActionResult> Get(DateRanageModel range, string category = null)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest(this.ModelState);
+            }
+
+            var transactions = this.transactionsRepo.All()
+                .Where(t => range.FromDate <= t.DateTime && t.DateTime <= range.ToDate);
+
+            if (category != null)
+            {
+                category = base.FormatCategoryName(category);
+                transactions = transactions.Where(t => t.Category.Name == category);
+            }
+
+            var filtered = await transactions
+                .ProjectTo<TransactionBindingModel>()
+                .ToListAsync();
 
             return this.Ok(filtered);
         }
@@ -113,27 +137,26 @@
                 return this.NotFound();
             }
 
-            modifiedTransaction.Amount = transaction.Amount;
-            modifiedTransaction.DateTime = transaction.DateTime;
-            modifiedTransaction.Type = transaction.Type;
+            var responseDelete = this.Delete(modifiedTransaction.Id);
+            var content = await responseDelete
+                .ExecuteAsync(CancellationToken.None);
 
-            var dbCategory = this.categoriesRepo.All()
-                .FirstOrDefault(c => c.Name == transaction.Category);
-
-            if (dbCategory == null)
+            if (!content.IsSuccessStatusCode)
             {
-                modifiedTransaction.Category = new Category { Name = transaction.Category };
+                return responseDelete;
             }
 
-            await this.transactionsRepo.Update(modifiedTransaction)
-                .SaveChangesAsync();
-
-            return this.Ok(modifiedTransaction);
+            return this.Post(transaction);
         }
 
         public IHttpActionResult Delete(int id, bool revertTransaction = true)
         {
             var transaction = this.transactionsRepo.GetById(id);
+            if (transaction == null)
+            {
+                return this.NotFound();
+            }
+
             if (transaction.BalanceId != this.UserId)
             {
                 return this.NotFound();
