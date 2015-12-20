@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Web.Http;
     using AutoMapper.QueryableExtensions;
     using Data.DbModels;
@@ -25,6 +26,8 @@
             this.balancesRepo = balancesRepository;
             this.categoriesRepo = categoriesRepository;
         }
+
+        // Todo: Transaction by date
 
         public IHttpActionResult Get(string category = null, int page = 1, int size = 10)
         {
@@ -54,6 +57,11 @@
 
         public IHttpActionResult Post(TransactionBindingModel transaction)
         {
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest(this.ModelState);
+            }
+
             var newTransaction = new Transaction
             {
                 Amount = transaction.Amount,
@@ -90,6 +98,37 @@
             return this.Created(
                 $"api/Transactions/{newTransaction.Id}",
                 $"Balance: {balance}");
+        }
+
+        public async Task<IHttpActionResult> Put(TransactionBindingModel transaction)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest(this.ModelState);
+            }
+
+            var modifiedTransaction = this.transactionsRepo.GetById(transaction.Id);
+            if (modifiedTransaction == null)
+            {
+                return this.NotFound();
+            }
+
+            modifiedTransaction.Amount = transaction.Amount;
+            modifiedTransaction.DateTime = transaction.DateTime;
+            modifiedTransaction.Type = transaction.Type;
+
+            var dbCategory = this.categoriesRepo.All()
+                .FirstOrDefault(c => c.Name == transaction.Category);
+
+            if (dbCategory == null)
+            {
+                modifiedTransaction.Category = new Category { Name = transaction.Category };
+            }
+
+            await this.transactionsRepo.Update(modifiedTransaction)
+                .SaveChangesAsync();
+
+            return this.Ok(modifiedTransaction);
         }
 
         public IHttpActionResult Delete(int id, bool revertTransaction = true)
