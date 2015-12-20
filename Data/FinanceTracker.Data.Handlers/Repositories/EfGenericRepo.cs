@@ -100,9 +100,9 @@ namespace FinanceTracker.Data.Handlers.Repositories
             return this.DbContext.SaveChanges();
         }
 
-        public Task<int> SaveChangesAsync()
+        public async Task<int> SaveChangesAsync()
         {
-            return this.DbContext.SaveChangesAsync();
+            return await this.DbContext.SaveChangesAsync();
         }
     }
 }
