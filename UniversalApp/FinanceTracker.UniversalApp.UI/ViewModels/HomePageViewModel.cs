@@ -1,26 +1,60 @@
 ﻿namespace FinanceTracker.UniversalApp.UI.ViewModels
 {
+    using System;
+    using System.Collections.ObjectModel;
     using Data.Contracts;
+    using Data.Models.Transactions;
     using Helpers;
 
     public class HomePageViewModel : NotifyChangeModel
     {
-        private IData dataProvider;
+        public const int DefaultTransactionsCount = 10;
 
-        private decimal currentAmount;
+        private readonly IData dataProvider;
 
-        public HomePageViewModel(IData dataProvider)
+        public HomePageViewModel(
+            IData dataProvider, int lastTransactionsCount = DefaultTransactionsCount)
         {
             this.dataProvider = dataProvider;
-            this.Balance = new BalanceViewModel();
+            this.LastTransactionsCount = lastTransactionsCount;
+            this.LastTransactions = new ObservableCollection<TransactionModel>();
         }
 
-        public BalanceViewModel Balance { get; set; }
+        public ObservableCollection<TransactionModel> LastTransactions { get; private set; }
 
-        public async void RefreshBalance()
+        public decimal BalanceAmount { get; private set; }
+
+        public int LastTransactionsCount { get; set; }
+
+        public async void RefreshInformation()
         {
             var balanceInfo = await this.dataProvider.GetBalanceInformationAsync();
-            this.Balance.CurrentAmount = balanceInfo.BalanceAmount;
+            this.BalanceAmount = balanceInfo.BalanceAmount;
+            this.RaisePropertyChanged(nameof(this.BalanceAmount));
+
+            this.LastTransactions.Add(new TransactionModel
+            {
+                DateTime = DateTime.Today,
+                Amount = 100,
+                Category = "TestDeposit",
+                Type = TransactionType.Deposit,
+            });
+
+            this.LastTransactions.Add(new TransactionModel
+            {
+                DateTime = DateTime.Today,
+                Amount = 50,
+                Category = "TestWithdraw",
+                Type = TransactionType.Withdraw,
+            });
+
+            this.LastTransactions.Add(new TransactionModel
+            {
+                DateTime = DateTime.Today,
+                Amount = 14,
+                Category = "TestDeposit",
+                Type = TransactionType.Deposit,
+            });
         }
     }
 }
