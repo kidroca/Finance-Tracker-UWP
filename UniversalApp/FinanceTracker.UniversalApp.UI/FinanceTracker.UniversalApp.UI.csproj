@@ -122,6 +122,7 @@
     <Compile Include="Data\RestApiData.cs" />
     <Compile Include="Helpers\DelegateCommand.cs" />
     <Compile Include="Helpers\NotifyChangeModel.cs" />
+    <Compile Include="Helpers\TypeToColorConverter.cs" />
     <Compile Include="Pages\AppShell.xaml.cs">
       <DependentUpon>AppShell.xaml</DependentUpon>
     </Compile>

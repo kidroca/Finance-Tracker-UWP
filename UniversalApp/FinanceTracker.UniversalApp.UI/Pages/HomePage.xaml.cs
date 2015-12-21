@@ -29,7 +29,7 @@
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            this.ViewModel.RefreshBalance();
+            this.ViewModel.RefreshInformation();
         }
 
         private void OnAddTransactionClick(object sender, RoutedEventArgs e)
