@@ -29,7 +29,7 @@
             this.categoriesRepo = categoriesRepository;
         }
 
-        public IHttpActionResult Get(string category = null, int page = 1, int size = 10)
+        public async Task<IHttpActionResult> Get(string category = null, int page = 1, int size = 10)
         {
             if (page <= 0 || size <= 0)
             {
@@ -40,17 +40,18 @@
                 .Where(t => t.IsDeleted == false
                             && t.BalanceId == this.UserId);
 
-            if (!string.IsNullOrEmpty(category.Trim()))
+            if (!string.IsNullOrEmpty(category))
             {
                 category = base.FormatCategoryName(category);
                 transactions = transactions.Where(t => t.Category.Name == category);
             }
 
-            var filtered = transactions
+            var filtered = await transactions
+                .OrderByDescending(t => t.DateTime)
                 .Skip((page - 1) * size)
                 .Take(size)
                 .ProjectTo<TransactionBindingModel>()
-                .ToList();
+                .ToListAsync();
 
             return this.Ok(filtered);
         }
@@ -73,6 +74,7 @@
             }
 
             var filtered = await transactions
+                .OrderByDescending(t => t.DateTime)
                 .ProjectTo<TransactionBindingModel>()
                 .ToListAsync();
 
