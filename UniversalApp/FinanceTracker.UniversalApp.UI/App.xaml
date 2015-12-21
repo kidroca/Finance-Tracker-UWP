@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:FinanceTracker.UniversalApp.UI"
     xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
+    xmlns:helpers="using:FinanceTracker.UniversalApp.UI.Helpers"
     RequestedTheme="Light">
     <Application.Resources>
         <Style x:Key="MainWrapperStyle" TargetType="Grid">
@@ -103,6 +104,16 @@
                    Text="Here is the deal:" 
                    Foreground="Black" />
             </Border>
+        </DataTemplate>
+        
+        <helpers:TypeToColorConverter x:Key="TypeToColorConverter" />
+        <DataTemplate x:Key="TransactionItemTemplate">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Type}" />
+                <TextBlock Text="{Binding Category}" />
+                <TextBlock Text="{Binding Amount}"
+                           Foreground="{Binding Type, Converter={StaticResource TypeToColorConverter}}"></TextBlock>
+            </StackPanel>
         </DataTemplate>
 
     </Application.Resources>
