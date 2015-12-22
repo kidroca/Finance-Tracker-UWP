@@ -7,6 +7,17 @@
     xmlns:helpers="using:FinanceTracker.UniversalApp.UI.Helpers"
     RequestedTheme="Light">
     <Application.Resources>
+        
+        <helpers:TypeToColorConverter x:Key="TypeToColorConverter" />
+        
+        <LinearGradientBrush x:Key="CustomLinearGradient" EndPoint="1,0.75" StartPoint="0,0.1" Opacity="0.9">
+            <GradientStop Color="#FF1D1D1D" Offset="1"/>
+            <GradientStop Color="#FF1D1D1D"/>
+            <GradientStop Color="#FF8F8F8F" Offset="0.349"/>
+            <GradientStop Color="#FF8F8F8F" Offset="0.699"/>
+            <GradientStop Color="#FF464444" Offset="0.53"/>
+        </LinearGradientBrush>
+
         <Style x:Key="MainWrapperStyle" TargetType="Grid">
             <Setter Property="Background">
                 <Setter.Value>
@@ -18,65 +29,64 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
         <Style x:Key="DefaultElementValues" TargetType="FrameworkElement">
             <Setter Property="Margin" Value="4, 4" />
         </Style>
 
         <Style x:Key="PanelGradient" TargetType="Panel">
-            <Setter Property="Background">
-                <Setter.Value>
-                    <LinearGradientBrush EndPoint="1,0.75" StartPoint="0,0.1">
-                        <GradientStop Color="#FF1D1D1D" Offset="1"/>
-                        <GradientStop Color="#FF1D1D1D"/>
-                        <GradientStop Color="#FF8F8F8F" Offset="0.349"/>
-                        <GradientStop Color="#FF8F8F8F" Offset="0.699"/>
-                        <GradientStop Color="#FF464444" Offset="0.53"/>
-                    </LinearGradientBrush>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Background" Value="{StaticResource CustomLinearGradient}" />
         </Style>
+        
         <Style TargetType="TextBlock"
                x:Key="TitleStyle">
-            <Setter Property="FontSize" Value="28" />
+            <Setter Property="FontSize" Value="24" />
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="Foreground" Value="Honeydew" />
         </Style>
+        
         <Style TargetType="Control" x:Key="CenteredElement">
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
+        
         <Style x:Key="CreationTextBlockStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontSize" Value="16" />
             <Setter Property="FontStyle" Value="Oblique" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
+        
         <Style x:Key="InputBoxColors" TargetType="Control" BasedOn="{StaticResource DefaultElementValues}">
             <Setter Property="Background" Value="#CCFFFFFF"></Setter>
             <Setter Property="BorderBrush" Value="Black" />
         </Style>
+        
         <Style x:Key="CreationTextBoxStyle" TargetType="Control" BasedOn="{StaticResource InputBoxColors}">
-            <Setter Property="FontSize" Value="24" />
+            <Setter Property="Height" Value="44" />
+            <Setter Property="FontSize" Value="16" />
             <Setter Property="FontStyle" Value="Oblique" />
             <Setter Property="Margin" Value="10, 0, 0, 0" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="Foreground" Value="Honeydew" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            
+            <!--<Setter Property="Foreground" Value="Honeydew" />-->
         </Style>
-        <Style x:Key="DatePickerStyle" TargetType="input:RadDatePicker" BasedOn="{StaticResource DefaultElementValues}">
-            <Setter Property="BorderThickness" Value="2" />
-            <Setter Property="Height" Value="48" />
-            <Setter Property="FontSize" Value="24" />
-            <Setter Property="FontStyle" Value="Oblique" />
-            <Setter Property="VerticalContentAlignment" Value="Stretch" />
-        </Style>
-        <Style x:Key="ComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource DefaultElementValues}">
+        
+        <Style x:Key="ComboBoxStyle" TargetType="Control" BasedOn="{StaticResource DefaultElementValues}">
             <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="Height" Value="48" />
+            <Setter Property="Height" Value="44" />
             <Setter Property="BorderThickness" Value="2 "/>
             <Setter Property="BorderBrush" Value="Black" />
-            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontSize" Value="16" />
             <Setter Property="FontStyle" Value="Oblique" />
             <Setter Property="Background" Value="#CCFFFFFF"></Setter>
         </Style>
+
+        <Style x:Key="DatePickerStyle" TargetType="input:RadDatePicker" BasedOn="{StaticResource ComboBoxStyle}">
+            <!--<Setter Property="BorderThickness" Value="2" />-->
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        </Style>
+        
         <Style x:Key="CustomContentDialogStyle" TargetType="ContentDialog">
             <Setter Property="Transitions">
                 <Setter.Value>
@@ -95,7 +105,14 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
+        <Style x:Key="ListItemTextBlock" 
+               TargetType="TextBlock" BasedOn="{StaticResource DefaultElementValues}">
+            <Setter Property="Foreground" Value="Honeydew" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontFamily" Value="Lucida Console" />
+        </Style>
+
         <DataTemplate x:Key="CustomContentDialogTitle">
             <Border Width="280" BorderThickness="0, 0, 0, 1" BorderBrush="Black">
                 <TextBlock HorizontalAlignment="Center" 
@@ -106,15 +123,23 @@
             </Border>
         </DataTemplate>
         
-        <helpers:TypeToColorConverter x:Key="TypeToColorConverter" />
         <DataTemplate x:Key="TransactionItemTemplate">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Type}" />
-                <TextBlock Text="{Binding Category}" />
-                <TextBlock Text="{Binding Amount}"
-                           Foreground="{Binding Type, Converter={StaticResource TypeToColorConverter}}"></TextBlock>
+            <StackPanel Width="240" HorizontalAlignment="Stretch" BorderThickness="1" BorderBrush="Black" Orientation="Horizontal">
+                <TextBlock HorizontalAlignment="Stretch" Text="{Binding Type}" Style="{StaticResource ListItemTextBlock}"/>
+                <TextBlock HorizontalAlignment="Stretch" Text="{Binding Category}" Style="{StaticResource ListItemTextBlock}" />
+                <TextBlock Text="{Binding Amount}" Style="{StaticResource ListItemTextBlock}"
+                           Foreground="{Binding Type, Converter={StaticResource TypeToColorConverter}}" />
             </StackPanel>
         </DataTemplate>
-
+        
+        <Style x:Key="StretchGridButton" 
+               BasedOn="{StaticResource DefaultElementValues}" TargetType="Button">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="Honeydew" />
+            <Setter Property="Content" Value="Click" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
     </Application.Resources>
 </Application>

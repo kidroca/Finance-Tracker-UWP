@@ -6,6 +6,13 @@
     {
         public const string PasswordErrorMessage = "Password should be at least 6 characters long";
 
+        /// <summary>
+        /// For Testing convenience
+        /// </summary>
+        public UserLoginModel()
+        {
+        }
+
         [Required]
         [MinLength(6, ErrorMessage = PasswordErrorMessage)]
         public string Password { get; set; }

@@ -2,10 +2,15 @@ namespace FinanceTracker.UniversalApp.UI.Data.Models.Transactions
 {
     using System;
     using System.ComponentModel.DataAnnotations;
-    using ViewModels;
 
     public class TransactionModel
     {
+        public TransactionModel()
+        {
+            // Sets the initial selected date to the current for convenience
+            this.DateTime = DateTime.Now;
+        }
+
         [Display(Name = "Date")]
         public DateTime DateTime { get; set; }
 
@@ -14,7 +19,7 @@ namespace FinanceTracker.UniversalApp.UI.Data.Models.Transactions
             double.MaxValue,
             ErrorMessage = "Transaction value must be positive, use transaction type 'Widthdraw' to specify a 'negative' transaction"
             )]
-        public decimal Amount { get; set; }
+        public double Amount { get; set; }
 
         public TransactionType Type { get; set; }
 

@@ -14,6 +14,7 @@
     using Newtonsoft.Json.Linq;
     using Windows.Storage.Streams;
     using Windows.Web.Http;
+    using Windows.Web.Http.Headers;
 
     /// <summary>
     /// Singleton Implementation, use GetInstance to obtain the instance of this class
@@ -106,29 +107,31 @@
             }
         }
 
-        // Todo: Authentication
         public async Task<IEnumerable<TransactionModel>> GetTransactionsAsync(
-            string category = null, int page = 1, int size = 10)
+            params KeyValuePair<string, string>[] queryParameters)
         {
             this.ConfirmAuthentication();
 
-            var queryParameters = new[]
-            {
-                new KeyValuePair<string, string>(nameof(category), category),
-                new KeyValuePair<string, string>(nameof(page), page.ToString()),
-                new KeyValuePair<string, string>(nameof(size), size.ToString()),
-            };
-
-            var endPointUri = this.CreateUriWithQueryString("transactions", queryParameters);
+            var endPointUri = this.CreateUriWithQueryString("api/Transactions", queryParameters);
 
             var request = new HttpRequestMessage(HttpMethod.Get, endPointUri);
+            request.Headers.Add("Authorization", this.authnenticationToken);
             request.Headers.Accept.ParseAdd("application/json");
 
             var response = await this.GetResponse(request);
-            var content = await response.Content.ReadAsStringAsync();
-            var collection = await Task.Run(() => JsonConvert.DeserializeObject<TransactionsCollection>(content));
 
-            return collection.Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var collection = await Task.Run(() => JsonConvert
+                    .DeserializeObject<List<TransactionModel>>(content));
+
+                return collection;
+            }
+            else
+            {
+                throw new ApplicationException(response.ReasonPhrase);
+            }
         }
 
         public async Task<IEnumerable<string>> GetCategoriesAsync()
@@ -148,8 +151,7 @@
 
                 IEnumerable<string> categoryNames = await Task.Run(() =>
                 {
-                    var categories = JsonConvert.DeserializeObject<CategoriesCollection>(content)
-                        .Result
+                    var categories = JsonConvert.DeserializeObject<List<CategoriesResponseModel>>(content)
                         .Select(c => c.Name);
 
                     return categories;
@@ -187,19 +189,53 @@
             }
         }
 
-        public Task<TransactionModel> AddTransactionAsync(TransactionModel transaction)
+        public async Task AddTransactionAsync(TransactionModel transaction)
         {
-            throw new NotImplementedException();
+            this.ConfirmAuthentication();
+
+            var uri = new Uri(this.BaseUri, "api/Transactions");
+            var request = new HttpRequestMessage(HttpMethod.Post, uri);
+            var asJson = JsonConvert.SerializeObject(transaction);
+
+            request.Content = new HttpStringContent(asJson, UnicodeEncoding.Utf8, "application/json");
+            request.Headers.Add("Authorization", this.authnenticationToken);
+
+            var response = await this.GetResponse(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Contains the transaction id
+                var createdAt = response.Headers.Location;
+            }
+            else
+            {
+                throw new ApplicationException(response.ReasonPhrase);
+            }
         }
 
-        public Task AddCategoryAsync(string category)
+        public async Task UpdateTransactionAsync(TransactionType transaction)
         {
-            throw new NotImplementedException();
+            this.ConfirmAuthentication();
+
+            var uri = new Uri(this.BaseUri, "api/Transactions");
+            var request = new HttpRequestMessage(HttpMethod.Put, uri);
+            request.Headers.Add("Authorization", this.authnenticationToken);
+            request.Content.Headers.ContentType = new HttpMediaTypeHeaderValue("application/json");
+
+            var response = await this.GetResponse(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(response.ReasonPhrase);
+            }
         }
 
-        public TransactionModel AddTransaction(TransactionModel transaction)
+        protected virtual void ConfirmAuthentication()
         {
-            throw new NotImplementedException();
+            if (!this.IsAuthenticated)
+            {
+                throw new ApplicationException("You don't have the rights to access this page.");
+            }
         }
 
         private async Task<HttpResponseMessage> GetResponse(HttpRequestMessage request)
@@ -213,23 +249,25 @@
 
         private Uri CreateUriWithQueryString(string endpoint, params KeyValuePair<string, string>[] parameters)
         {
-            string query;
-            using (var content = new HttpFormUrlEncodedContent(parameters))
+            // Todo: Add Escaping Character
+            var uriBuilder = new UriBuilder(new Uri(this.BaseUri, endpoint));
+
+            if (parameters.Length == 0)
             {
-                query = content.ReadAsStringAsync().GetResults();
+                return uriBuilder.Uri;
             }
 
-            var uri = new Uri(this.BaseUri, endpoint + query);
+            var first = parameters.First();
+            uriBuilder.Query = string.Format("{0}={1}", first.Key, first.Value ?? "null");
 
-            return uri;
-        }
-
-        private void ConfirmAuthentication()
-        {
-            if (!this.IsAuthenticated)
+            for (int i = 1; i < parameters.Length; i++)
             {
-                throw new ApplicationException("You don't have the rights to access this page.");
+                var pair = parameters[i];
+                uriBuilder.Query = uriBuilder.Query.Substring(1) +
+                    string.Format("&{0}={1}", pair.Key, pair.Value ?? "null");
             }
+
+            return uriBuilder.Uri;
         }
     }
 }

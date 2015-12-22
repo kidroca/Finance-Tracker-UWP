@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Net;
     using System.Net.Http;
     using System.Security.Claims;
     using System.Security.Cryptography;
@@ -16,6 +17,7 @@
     using Microsoft.Owin.Security.Cookies;
     using Microsoft.Owin.Security.OAuth;
     using Models;
+    using Newtonsoft.Json;
     using Providers;
     using Results;
 
@@ -62,11 +64,20 @@
                 return null;
             }
 
-            return this.Ok(new
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
+            responseMessage.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
+            var payload = new
             {
                 BalanceAmount = user.Balance.CurrentAmount,
                 user.UserName
-            });
+            };
+
+            string json = JsonConvert.SerializeObject(payload);
+
+            responseMessage.Content = new StringContent(json);
+
+            var response = this.ResponseMessage(responseMessage);
+            return (response);
         }
 
         // GET api/Account/UserInfo

@@ -1,8 +1,7 @@
 ﻿namespace FinanceTracker.UniversalApp.UI.ViewModels
 {
     using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel;
     using System.Windows.Input;
     using Control;
     using Data.Contracts;
@@ -13,7 +12,7 @@
     using Windows.UI.Xaml;
     using Windows.UI.Xaml.Controls;
 
-    public class MainPageViewModel : NotifyChangeModel
+    public class MainPageViewModel : BaseViewModel, INotifyPropertyChanged
     {
         private readonly IDataAuth dataProvider;
         private bool isLoginAvailable;
@@ -29,6 +28,11 @@
         public ICommand LoginCommand { get; }
 
         public ICommand RegisterCommand { get; }
+
+        public bool InProgress
+        {
+            get { return !this.isLoginAvailable; }
+        }
 
         private async void Register(Panel container)
         {
@@ -68,6 +72,7 @@
 
             this.isLoginAvailable = false;
             this.RaisePropertyChanged(nameof(this.LoginCommand));
+            this.RaisePropertyChanged(nameof(this.InProgress));
 
             try
             {
@@ -78,7 +83,7 @@
                 var content = (Window.Current.Content as AppShell).AppFrame;
                 content.Navigate(typeof(HomePage));
             }
-            catch (ApplicationException e)
+            catch (ApplicationException)
             {
                 // Notify User. Show Login Screen
                 var messageDialog = new ErrorNotificationDialog();
@@ -91,28 +96,13 @@
             {
                 this.isLoginAvailable = true;
                 this.RaisePropertyChanged(nameof(this.LoginCommand));
+                this.RaisePropertyChanged(nameof(this.InProgress));
             }
         }
 
         private bool IsLogginAvailable(object obj)
         {
             return this.isLoginAvailable;
-        }
-
-        private bool IsValidModel<T>(T model)
-        {
-            var context = new ValidationContext(model, serviceProvider: null, items: null);
-            var violations = new List<ValidationResult>();
-
-            bool isValid = Validator.TryValidateObject(model, context, violations, validateAllProperties: true);
-
-            if (!isValid)
-            {
-                var dialog = new ErrorNotificationDialog { DataContext = violations };
-                dialog.ShowAsync();
-            }
-
-            return isValid;
         }
     }
 }

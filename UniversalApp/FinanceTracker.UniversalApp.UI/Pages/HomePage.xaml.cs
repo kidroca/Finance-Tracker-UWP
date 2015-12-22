@@ -5,6 +5,7 @@
     using ViewModels;
     using Windows.UI.Xaml;
     using Windows.UI.Xaml.Controls;
+    using Windows.UI.Xaml.Input;
     using Windows.UI.Xaml.Navigation;
 
     public sealed partial class HomePage : Page
@@ -35,6 +36,16 @@
         private void OnAddTransactionClick(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(CreateTransactionPage));
+        }
+
+        private void OnHoldingOverTransactionsList(object sender, HoldingRoutedEventArgs e)
+        {
+            var listView = sender as ListView;
+
+            var selected = listView?.SelectedItem;
+            if (selected == null) return;
+
+            this.Frame.Navigate(typeof(TransactionDetailsPage), selected);
         }
     }
 }

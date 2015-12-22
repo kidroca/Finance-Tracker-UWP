@@ -7,7 +7,6 @@ namespace FinanceTracker.UniversalApp.UI.Control
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Pages;
 
     public sealed partial class NavigationControl : UserControl
@@ -55,16 +54,13 @@ namespace FinanceTracker.UniversalApp.UI.Control
             var buttons = e.NewValue as IEnumerable<AppBarButtonContent>;
             if (buttons == null) return;
 
-            Task.Run(() =>
+            foreach (var button in buttons)
             {
-                foreach (var button in buttons)
+                if (button.DestinationPageType == navView.CurrentPage)
                 {
-                    if (button.DestinationPageType == navView.CurrentPage)
-                    {
-                        button.IsEnabled = false;
-                    }
+                    button.IsEnabled = false;
                 }
-            });
+            }
         }
     }
 }

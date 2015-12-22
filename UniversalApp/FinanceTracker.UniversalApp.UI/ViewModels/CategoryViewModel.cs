@@ -29,6 +29,6 @@ namespace FinanceTracker.UniversalApp.UI.ViewModels
             }
         }
 
-        public ObservableCollection<TransactionViewModel> Transactions { get; set; }
+        public ObservableCollection<CreateTransactionViewModel> Transactions { get; set; }
     }
 }

@@ -5,18 +5,19 @@
     using Windows.UI;
     using Windows.UI.Xaml.Data;
     using Windows.UI.Xaml.Media;
+    using Data.Models.Transactions;
 
     public class TypeToColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (targetType != typeof(SolidColorBrush))
+            if (targetType != typeof(Brush))
             {
                 return null;
             }
 
             TransactionType type;
-            if (Enum.TryParse(value.ToString(), out type))
+            if (!Enum.TryParse(value.ToString(), out type))
             {
                 return null;
             }
@@ -27,7 +28,7 @@
             }
             else
             {
-                return new SolidColorBrush(Colors.Crimson);
+                return new SolidColorBrush(Colors.DarkOrange);
             }
         }
 

@@ -1,8 +1,12 @@
 ﻿namespace FinanceTracker.WebApi.AspApi.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Data.Entity;
     using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Net.Http.Formatting;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Web.Http;
@@ -29,7 +33,7 @@
             this.categoriesRepo = categoriesRepository;
         }
 
-        public async Task<IHttpActionResult> Get(string category = null, int page = 1, int size = 10)
+        public async Task<IHttpActionResult> Get(int page, int size = 10, string category = null)
         {
             if (page <= 0 || size <= 0)
             {
@@ -53,7 +57,13 @@
                 .ProjectTo<TransactionBindingModel>()
                 .ToListAsync();
 
-            return this.Ok(filtered);
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
+            responseMessage.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
+            responseMessage.Content = new ObjectContent(
+                typeof(List<TransactionBindingModel>), filtered, new JsonMediaTypeFormatter());
+
+            var response = this.ResponseMessage(responseMessage);
+            return (response);
         }
 
         // Todo Check for api endpoint problems because method is overloaded
@@ -78,7 +88,13 @@
                 .ProjectTo<TransactionBindingModel>()
                 .ToListAsync();
 
-            return this.Ok(filtered);
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
+            responseMessage.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
+            responseMessage.Content = new ObjectContent(
+                typeof(List<TransactionBindingModel>), filtered, new JsonMediaTypeFormatter());
+
+            var response = this.ResponseMessage(responseMessage);
+            return (response);
         }
 
         public IHttpActionResult Post(TransactionBindingModel transaction)

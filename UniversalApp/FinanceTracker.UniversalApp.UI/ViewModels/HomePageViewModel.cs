@@ -1,12 +1,14 @@
 ﻿namespace FinanceTracker.UniversalApp.UI.ViewModels
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using Control;
     using Data.Contracts;
+    using Data.Exceptions;
     using Data.Models.Transactions;
-    using Helpers;
 
-    public class HomePageViewModel : NotifyChangeModel
+    public class HomePageViewModel : BaseViewModel
     {
         public const int DefaultTransactionsCount = 10;
 
@@ -22,7 +24,7 @@
 
         public ObservableCollection<TransactionModel> LastTransactions { get; private set; }
 
-        public decimal BalanceAmount { get; private set; }
+        public double BalanceAmount { get; private set; }
 
         public int LastTransactionsCount { get; set; }
 
@@ -32,29 +34,30 @@
             this.BalanceAmount = balanceInfo.BalanceAmount;
             this.RaisePropertyChanged(nameof(this.BalanceAmount));
 
-            this.LastTransactions.Add(new TransactionModel
+            try
             {
-                DateTime = DateTime.Today,
-                Amount = 100,
-                Category = "TestDeposit",
-                Type = TransactionType.Deposit,
-            });
+                KeyValuePair<string, string>[] parameters =
+                {
+                    new KeyValuePair<string, string>("page", "1"),
+                    new KeyValuePair<string, string>("size", DefaultTransactionsCount.ToString())
+                };
 
-            this.LastTransactions.Add(new TransactionModel
-            {
-                DateTime = DateTime.Today,
-                Amount = 50,
-                Category = "TestWithdraw",
-                Type = TransactionType.Withdraw,
-            });
+                var transactions = await this.dataProvider.GetTransactionsAsync(parameters);
 
-            this.LastTransactions.Add(new TransactionModel
+                this.LastTransactions.Clear();
+                foreach (var transaction in transactions)
+                {
+                    this.LastTransactions.Add(transaction);
+                }
+            }
+            catch (ApplicationException e)
             {
-                DateTime = DateTime.Today,
-                Amount = 14,
-                Category = "TestDeposit",
-                Type = TransactionType.Deposit,
-            });
+                var messageDialog = new ErrorNotificationDialog();
+                string[] messages = { e.Message };
+                messageDialog.DataContext = messages;
+
+                await messageDialog.ShowAsync();
+            }
         }
     }
 }

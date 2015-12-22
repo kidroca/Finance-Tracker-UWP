@@ -8,14 +8,14 @@ namespace FinanceTracker.UniversalApp.UI.Data.Contracts
     public interface IData
     {
         Task<IEnumerable<TransactionModel>> GetTransactionsAsync(
-            string category = null, int page = 1, int size = 10);
+            params KeyValuePair<string, string>[] queryParameters);
 
         Task<IEnumerable<string>> GetCategoriesAsync();
 
         Task<BalanceResponseModel> GetBalanceInformationAsync();
 
-        Task<TransactionModel> AddTransactionAsync(TransactionModel transaction);
+        Task AddTransactionAsync(TransactionModel transaction);
 
-        Task AddCategoryAsync(string category);
+        Task UpdateTransactionAsync(TransactionType transaction);
     }
 }

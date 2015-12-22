@@ -1,4 +1,4 @@
-﻿namespace FinanceTracker.UniversalApp.UI.Data.Models
+﻿namespace FinanceTracker.UniversalApp.UI.Data.Models.Categories
 {
     public class CategoriesResponseModel
     {

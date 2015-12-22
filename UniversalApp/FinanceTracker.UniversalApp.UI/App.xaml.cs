@@ -4,13 +4,17 @@
     using Pages;
     using Windows.ApplicationModel;
     using Windows.ApplicationModel.Activation;
+    using Windows.UI.Core;
     using Windows.UI.Xaml;
+    using Windows.UI.Xaml.Controls;
     using Windows.UI.Xaml.Navigation;
 
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
     sealed partial class App : Application
+
+
     {
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -22,7 +26,8 @@
                 Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
                 Microsoft.ApplicationInsights.WindowsCollectors.Session);
             this.InitializeComponent();
-            this.Suspending += OnSuspending;
+            this.Suspending += this.OnSuspending;
+
         }
 
         /// <summary>
@@ -50,7 +55,8 @@
                 // Create a Frame to act as the navigation context and navigate to the first page
                 shell = new AppShell();
 
-                shell.AppFrame.NavigationFailed += OnNavigationFailed;
+                shell.AppFrame.NavigationFailed += this.OnNavigationFailed;
+                shell.AppFrame.Navigated += this.OnNavigated;
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
@@ -59,6 +65,13 @@
 
                 // Place the frame in the current Window
                 Window.Current.Content = shell;
+
+                SystemNavigationManager.GetForCurrentView().BackRequested += this.OnBackRequested;
+
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                shell.AppFrame.CanGoBack ?
+                AppViewBackButtonVisibility.Visible :
+                AppViewBackButtonVisibility.Collapsed;
             }
 
             if (shell.AppFrame.Content == null)
@@ -77,7 +90,7 @@
         /// </summary>
         /// <param name="sender">The Frame which failed navigation</param>
         /// <param name="e">Details about the navigation failure</param>
-        void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
+        private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
         {
             throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
         }
@@ -94,6 +107,31 @@
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
+        }
+
+        private void OnNavigated(object sender, NavigationEventArgs e)
+        {
+            // Each time a navigation event occurs, update the Back button's visibility
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                ((Frame)sender).CanGoBack ?
+                AppViewBackButtonVisibility.Visible :
+                AppViewBackButtonVisibility.Collapsed;
+        }
+
+        private void OnBackRequested(
+            object sender, Windows.UI.Core.BackRequestedEventArgs e)
+        {
+            var appShell = Window.Current.Content as AppShell;
+            if (appShell == null)
+                return;
+
+            // Navigate back if possible, and if the event has not 
+            // already been handled .
+            if (appShell.AppFrame.CanGoBack && e.Handled == false)
+            {
+                e.Handled = true;
+                appShell.AppFrame.GoBack();
+            }
         }
     }
 }

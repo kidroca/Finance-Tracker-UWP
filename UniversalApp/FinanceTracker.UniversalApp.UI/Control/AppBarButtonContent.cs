@@ -2,8 +2,9 @@
 {
     using System;
     using Helpers;
+    using ViewModels;
 
-    public class AppBarButtonContent : NotifyChangeModel
+    public class AppBarButtonContent : BaseViewModel
     {
         private bool isEnabled;
 
